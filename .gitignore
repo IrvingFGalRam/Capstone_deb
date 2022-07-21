@@ -1,0 +1,13 @@
+__pycache__
+
+# IntelliJ
+.idea/
+
+# Your actual script
+airflow_install.sh
+
+# Local .venv directories
+**/.venv/*
+
+# Local directory for data
+**/data/*

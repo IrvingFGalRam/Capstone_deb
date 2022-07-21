@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Save current worrking directory
+CALL_DIR=$(pwd)
+
+# Use absolute paths here
+TERRAFORM_DIR= # Path where the terraform apply was executed
+
+cd $TERRAFORM_DIR
+
+# Get GCP GKE cluster context
+echo "...Getting GKE cluster context"
+gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw location)
+
+# Creating Network File System server
+echo "...Creating Network File System server"
+kubectl create namespace nfs
+kubectl -n nfs apply -f nfs/nfs-server.yaml
+export NFS_SERVER=$(kubectl -n nfs get service/nfs-server -o jsonpath="{.spec.clusterIP}")
+
+#      Secrets env vars (airflow vars and connections) to inject to pods using Terraform output data.
+
+## Creating the cloud provider connection URI (Not Working) https://airflow.apache.org/docs/apache-airflow-providers-google/stable/connections/gcp.html#configuring-the-connection
+AFCONN_GCP='google-cloud-platform://'
+
+## Creating the connection URI for the database you'll use in your project.
+AFCONN_POSTGRES="postgresql://<db_user>:<db_password>@<public_ip>/<db_name>"
+
+## Env vars for data related to the rest of the services
+AFVAR_BUCKET="capstone-project-wzl-input"
+
+cd $CALL_DIR
+
+# Enable nfs server for cluster
+echo "...kubectl create namespace storage..."
+kubectl create namespace storage
+echo "...helm repo add nfs-subdir-external-provisioner..."
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+echo "...helm install nfs-subdir-external-provisioner..."
+# GitBash was prepending some path see https://stackoverflow.com/a/34386471 (worked with nfs.path=//)
+helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
+    --namespace storage \
+    --set nfs.server=$NFS_SERVER \
+    --set nfs.path=//
+
+# Create airflow namespace
+echo "...kubectl create namespace airflow..."
+kubectl create namespace airflow
+helm repo add apache-airflow https://airflow.apache.org
+
+# Inject env vars calculated earlier as secrets
+echo "...kubectl create secret generic af-connections"
+kubectl create secret generic af-connections --from-literal=gcp=${AFCONN_GCP} --from-literal=postgres=${AFCONN_POSTGRES} --namespace airflow
+
+echo "...kubectl create secret generic af-variables"
+kubectl create secret generic af-variables --from-literal=bucket=${AFVAR_BUCKET} --namespace airflow
+
+# Install airflow after secrets set
+echo "...Installing Airflow... please wait"
+helm install airflow apache-airflow/airflow -n airflow -f values.yaml
+
+echo "...Press any key to continue"
+while [ true ] ; do
+read -t 3 -n 1
+if [ $? = 0 ] ; then
+exit ;
+else
+echo "...waiting for the keypress"
+fi
+done
