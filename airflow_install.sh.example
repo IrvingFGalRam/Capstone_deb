@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Save current worrking directory
+# Save current working directory
 CALL_DIR=$(pwd)
 
 # Use absolute paths here

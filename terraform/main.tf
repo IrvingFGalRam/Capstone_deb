@@ -51,7 +51,7 @@ module "cloudsql" {
 
 # Storage Bucket and Data
 resource "google_storage_bucket" "input_bucket" {
-  name     = "${var.project_id}-input"
+  name     = "${var.project_id}-storage"
   location = var.region
 }
 
@@ -70,5 +70,11 @@ resource "google_storage_bucket_object" "data_2" {
 resource "google_storage_bucket_object" "data_3" {
   name   = var.data_3_name
   source = var.data_3_path
+  bucket = google_storage_bucket.input_bucket.name
+}
+
+resource "google_storage_bucket_object" "jars" {
+  name   = var.scala_scripts_file
+  source = var.scala_scripts_path
   bucket = google_storage_bucket.input_bucket.name
 }
