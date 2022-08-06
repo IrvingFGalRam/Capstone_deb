@@ -74,7 +74,7 @@ resource "google_storage_bucket_object" "data_3" {
 }
 
 resource "google_storage_bucket_object" "jars" {
-  name   = var.scala_scripts_file
+  name   = var.scala_scripts_name
   source = var.scala_scripts_path
   bucket = google_storage_bucket.input_bucket.name
 }

@@ -56,26 +56,26 @@ variable "db_password" {
   default     = "dbpassword"
 }
 variable "data_1_path" {
-  description = "Path of the file 1"
+  description = "Local path of the file 1"
 }
 variable "data_2_path" {
-  description = "Path of the file 2"
+  description = "Local path of the file 2"
 }
 variable "data_3_path" {
-  description = "Path of the file 3"
+  description = "Local path of the file 3"
 }
 variable "data_1_name" {
-  description = "Name for the file 1"
+  description = "Name for the file 1 in proyect's bucket"
 }
 variable "data_2_name" {
-  description = "Name for the file 2"
+  description = "Name for the file 2 in proyect's bucket"
 }
 variable "data_3_name" {
-  description = "Name for the file 3"
-}
-variable "scala_scripts_file" {
-  description = "Name for the scala jar"
+  description = "Name for the file 3 in proyect's bucket"
 }
 variable "scala_scripts_path" {
-  description = "Path of the file 3"
+  description = "Local path of the scala jar"
+}
+variable "scala_scripts_name" {
+  description = "Name of the file 3 in proyect's bucket"
 }
