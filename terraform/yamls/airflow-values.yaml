@@ -31,3 +31,17 @@ logs:
     size: 1Gi
     # If using a custom storageClass, pass name here
     storageClassName: nfs-client
+
+#images:
+#  airflow:
+#    repository: irvingfgr/airflow-deb # Your Docker Hub repo and image name
+#    tag: 0.0.1 # The tag you chose when building the Dockerfile
+#
+#logs:
+#  persistence:
+#    # Enable persistent volume for storing logs
+#    enabled: true
+#    # Volume size for logs
+#    size: 1Gi
+#    # If using a custom storageClass, pass name here
+#    storageClassName: nfs-client
