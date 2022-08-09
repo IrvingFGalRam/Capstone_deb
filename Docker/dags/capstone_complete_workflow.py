@@ -27,7 +27,7 @@ from airflow.utils.dates import days_ago
 
 
 # General constants
-DAG_ID = "complete_workflow"
+DAG_ID = "complete_workflow_ci"
 STABILITY_STATE = "unstable"
 CLOUD_PROVIDER = "gcp"
 CLUSTER = "dataproc"
